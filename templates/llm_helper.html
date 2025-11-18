@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>LLM Helper - Ask About Brahmi Tutor Site & History</h2>
+<form method="post" action="/llm_helper">
+    <textarea name="query" placeholder="Ask me about the Brahmi script, site navigation, or history here..." rows="5" style="width: 100%;">{{ query if query }}</textarea>
+    <br/>
+    <button type="submit">Ask</button>
+</form>
+
+{% if response %}
+<hr>
+<h3>AI Assistant Response:</h3>
+<div class="llm-response">
+    {{ response | safe }}
+</div>
+  
+{% endif %}
+{% endblock %}

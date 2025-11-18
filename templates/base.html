@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Brahmi Tutor</title>
+<link rel="stylesheet" href="/static/styles.css"/>
+</head>
+<body>
+<style>
+    body {
+        background-image: url("/static/Background.png");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+        font-family: 'Arial', sans-serif;
+    }
+    
+    nav {
+        background: linear-gradient(135deg, #fdba00 0%, #f84f00 100%);
+        padding: 15px 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        backdrop-filter: blur(10px);
+    }
+    
+    nav a {
+        color: white;
+        text-decoration: none;
+        margin: 0 20px;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    nav a:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    nav a:hover:before {
+        left: 100%;
+    }
+    
+    nav a:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        color: #fff;
+    }
+    
+    nav a:active {
+        transform: translateY(0);
+    }
+    
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 0 20px;
+    }
+
+    .content {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 40px;
+    background: linear-gradient(135deg, #006994 0%, #0091ad 50%, #4db8da 100%);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    min-height: 60vh;
+    color: white;
+    font-family: 'Times New Roman', Times, serif;
+    text-align: center;
+    /* display: flex; */
+    align-items: center;
+    justify-content: center;
+    }
+</style>
+<nav>
+  <div class="nav-container">
+    <a href="/lesson">Lessons</a>
+    <a href="/quiz/1">Quiz 1</a>
+    <a href="/quiz/2">Quiz 2</a>
+    <a href="/quiz/3">Quiz 3</a>
+    <a href="/progress">Progress</a>
+    <a href="/llm_helper">AI Help</a>
+    <a href="/brahmi_converter">Eng 2 Brahmi</a>
+  </div>
+</nav>
+<div class="content">
+  {% block content %}{% endblock %}
+</div>
+</body>
+</html>

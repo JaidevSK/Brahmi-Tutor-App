@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Brahmi Characters</h1>
+<table style="margin: 0 auto;">
+    <tr><th>Brahmi</th><th>Devanagari</th><th>Sound</th></tr>
+{% for c in brahmi_letters %}
+<tr><td>{{ c.brahmi }}</td><td>{{ c.devanagari }}</td><td>{{ c.sound }}</td></tr>
+{% endfor %}
+</table>
+{% endblock %}

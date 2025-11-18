@@ -1,0 +1,208 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Roman Script to Ashokan Brahmi Converter</h1>
+  
+  <form id="convertForm">
+    <textarea id="romanInput" placeholder="Start typing in roman script..." rows="8" style="width:100%;">devaanaaMpiyasa piyadasino asokaaraajaa</textarea>
+    <br />
+    <button type="submit" class="convert-button" style="
+      background-color: #3bfc00;
+      color: rgb(0, 0, 0);
+      font-size: 18px;
+      font-weight: bold;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      margin: 20px 0;
+      box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+      transition: all 0.3s ease;
+    "
+    >Convert to Brahmi Script</button>
+  </form>
+
+  <a id="downloadLink" class="download-link" style="
+    display: none;
+    background-color: #ff00f2;
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 20px auto;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  " 
+  download="brahmi_output.txt" href="#">
+    Download Result as Text File
+  </a>
+
+  <div class="output-container" id="brahmiOutput" aria-live="polite" aria-atomic="true" style="
+    background: linear-gradient(135deg, #f15c05 0%, #f5f100 100%);
+    border: 2px solid #e0e6ed;
+    border-radius: 15px;
+    padding: 30px;
+    margin: 20px 0;
+    font-family: 'Noto Sans Brahmi', serif;
+    font-size: 24px;
+    line-height: 1.8;
+    text-align: center;
+    color: #2c3e50;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    word-wrap: break-word;
+    transition: all 0.3s ease;
+  "></div>
+
+
+  <script>
+    const VOWEL_SIGNS = {
+    'a': '', 'aa': '𑀸', 'i': '𑀺', 'ii': '𑀻', 'u': '𑀼', 'uu': '𑀽', 'R^i': '𑀾', 'RR^i': '𑀿', 'L^i':'𑁀', 'Ll^i':'𑁁', 'e': '𑁂', 'ai': '𑁃', 'o': '𑁄', 'au': '𑁅',
+    };
+
+    const FULL_VOWELS = {
+    'a': '𑀅', 'aa': '𑀆', 'i': '𑀇', 'ii': '𑀈', 'u': '𑀉', 'uu': '𑀊', 'R^i': '𑀋', 'RR^i': '𑀌', 'L^i':'𑀍', 'Ll^i':'𑀎', 'e': '𑀏', 'ai': '𑀐', 'o': '𑀑', 'au': '𑀒',
+    };
+
+    const CONSONANTS = {
+    'k': '𑀓',  'kh': '𑀔', 'g': '𑀕', 'gh': '𑀖', 'G': '𑀗',
+    'c': '𑀘', 'ch': '𑀙',  'j': '𑀚', 'jh': '𑀛', 'J': '𑀜',
+    'T': '𑀝','Th': '𑀞', 'D': '𑀟', 'Dh': '𑀠','N': '𑀡', 
+    't': '𑀢','th': '𑀣', 'd': '𑀤', 'dh':'𑀥', 'n': '𑀦',
+    'p': '𑀧', 'ph': '𑀨', 'b': '𑀩', 'bh': '𑀪', 'm': '𑀫',
+    'y': '𑀬', 'r': '𑀭', 'l': '𑀮', 'v': '𑀯',
+    'sh': '𑀰', 'Sh': '𑀱', 's': '𑀲', 'h': '𑀳', 'L': '𑀴', 
+    };
+
+    const SPECIALS = {
+    'M': '𑀁',  
+    'H': '𑀂',   
+    ' ': ' ',    
+    '0': '𑁦', '1': '𑁧', '2': '𑁨', '3': '𑁩', '4': '𑁪', '5': '𑁫', '6': '𑁬', '7': '𑁭', '8': '𑁮', '9': '𑁯',
+    '.': '𑁇', ',': ',', ':': ':', ';': ';', '?': '?', '!': '!', '(': '(', ')': ')', '-': '-'
+    };
+
+  const orderTokens = (obj) => Object.keys(obj).sort((a,b) => b.length - a.length);
+  const VOWEL_TOKENS = orderTokens(VOWEL_SIGNS);
+  const FULL_VOWEL_TOKENS = orderTokens(FULL_VOWELS);
+  const CONSONANT_TOKENS = orderTokens(CONSONANTS);
+  const SPECIAL_TOKENS = orderTokens(SPECIALS);
+
+  function convertToBrahmi(romanText) {
+    if (!romanText) return "No text entered.";
+    let output = '';
+    let i = 0;
+
+    while (i < romanText.length) {
+      let matched = false;
+
+      // 1. Try consonants
+      for (const token of CONSONANT_TOKENS) {
+        if (romanText.startsWith(token, i)) {
+          const consonantChar = CONSONANTS[token];
+          i += token.length;
+
+          // Lookahead matra or special ending
+          let matraFound = false;
+          const matraTokens = [...VOWEL_TOKENS, 'M', 'H'];
+          for (const mToken of matraTokens) {
+            if (romanText.startsWith(mToken, i)) {
+              if (mToken === 'M') {
+                output += consonantChar + SPECIALS['M'];
+              } else if (mToken === 'H') {
+                output += consonantChar + SPECIALS['H'];
+              } else {
+                output += consonantChar + VOWEL_SIGNS[mToken];
+              }
+              i += mToken.length;
+              matraFound = true;
+              break;
+            }
+          }
+          if (!matraFound) {
+            let nextIsConsonant = false;
+            for (const nextCons of CONSONANT_TOKENS) {
+              if (romanText.startsWith(nextCons, i)) {
+                nextIsConsonant = true;
+                break;
+              }
+            }
+            if (nextIsConsonant || i === romanText.length || romanText[i] === ' ') {
+              output += consonantChar + '𑁆';
+            } else {
+              output += consonantChar;
+            }
+          }
+          matched = true;
+          break;
+        }
+      }
+      if (matched) continue;
+
+      // 2. Try full vowels
+      for (const token of FULL_VOWEL_TOKENS) {
+        if (romanText.startsWith(token, i)) {
+          output += FULL_VOWELS[token];
+          i += token.length;
+          matched = true;
+          break;
+        }
+      }
+      if (matched) continue;
+
+      // 3. Try special characters
+      for (const token of SPECIAL_TOKENS) {
+        if (romanText.startsWith(token, i)) {
+          output += SPECIALS[token];
+          i += token.length;
+          matched = true;
+          break;
+        }
+      }
+      if (matched) continue;
+
+      // Fallback
+      output += romanText[i];
+      i++;
+    }
+    return output;
+  }
+
+  const form = document.getElementById('convertForm');
+  const input = document.getElementById('romanInput');
+  const outputDiv = document.getElementById('brahmiOutput');
+  const downloadLink = document.getElementById('downloadLink');
+
+  function utf8ToUri(str) {
+    return encodeURIComponent(str).replace(/'/g, "%27").replace(/"/g, "%22");
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const romanText = input.value.trim();
+    if (romanText.length === 0) {
+      outputDiv.textContent = "Please enter some text to convert.";
+      downloadLink.style.display = "none";
+      return;
+    }
+    const converted = convertToBrahmi(romanText);
+    outputDiv.textContent = converted;
+    downloadLink.href = "data:text/plain;charset=utf-8," + utf8ToUri(converted);
+    downloadLink.style.display = "inline-block";
+  });
+
+  window.onload = () => {
+    outputDiv.textContent = convertToBrahmi(input.value.trim());
+    downloadLink.href = "data:text/plain;charset=utf-8," + utf8ToUri(outputDiv.textContent);
+    downloadLink.style.display = "inline-block";
+  };
+</script>
+{% endblock %}

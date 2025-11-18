@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Quiz {{ quiz_number }} Results</h2>
+<p>Your score: {{ score }} / {{ total }}</p>
+<table style="margin: 0 auto;">
+    <tr><th>Question</th><th>Your Answer</th><th>Correct Answer</th></tr>
+{% for pair in qa_pairs %}
+<tr {% if pair.user_answer == pair.answer %}class="correct"{% else %}class="incorrect"{% endif %}>
+    <td>{{ pair.question }}</td>
+    <td>{{ pair.user_answer if pair.user_answer else "No answer" }}</td>
+    <td>{{ pair.answer }}</td>
+</tr>
+{% endfor %}
+</table>
+<a href="/">Back to Home</a>
+{% endblock %}

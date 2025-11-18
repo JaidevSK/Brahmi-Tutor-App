@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Quiz {{ quiz_number }} - Question {{ q_index + 1 }} of {{ q_count }}</h2>
+<p><strong>Q: Convert this  from {{ quiz_type }}: </strong> {{ question.question }}</p>
+<form method="post" action="/quiz/{{ quiz_number }}/question/{{ q_index }}" id="quizForm">
+    <div style="display: flex; flex-direction: column; margin: 20px 0; margin-left: 200px;">
+        {% for opt in question.options %}
+        <label style="display: flex; align-items: center; gap: 8px; margin: 5px 0;">
+            <input type="radio" name="answer" value="{{ opt }}" {% if opt == selected %}checked{% endif %}/>
+            {{ opt }}
+        </label>
+        {% endfor %}
+        </div>
+        <div class="nav-buttons">
+            {% if q_index > 0 %}
+            <button type="submit" name="action" value="prev" style="
+                background-color: #dd1c0e;
+                color: white;
+                font-size: 16px;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: bold;
+                margin: 0 10px;
+            ">Previous</button>
+        {% endif %}
+        {% if q_index < q_count - 1 %}
+            <button type="submit" name="action" value="next" onclick="return validateAnswer(this)" style="
+                background-color: #00b400;
+                color: white;
+                font-size: 16px;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: bold;
+                margin: 0 10px;
+            ">Next</button>
+        {% else %}
+            <button type="submit" name="action" value="submit" onclick="return validateAnswer(this)" style="
+                background-color: #ffa602;
+                color: white;
+                font-size: 16px;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: bold;
+                margin: 0 10px;
+            ">Submit</button>
+        {% endif %}
+    </div>
+</form>
+
+<script>
+function validateAnswer(button) {
+    // Skip validation for Previous button
+    if (button.value === 'prev') {
+        return true;
+    }
+    
+    // Check if any radio button is selected
+    const radios = document.getElementsByName('answer');
+    let isSelected = false;
+    
+    for (let i = 0; i < radios.length; i++) {
+        if (radios[i].checked) {
+            isSelected = true;
+            break;
+        }
+    }
+    
+    if (!isSelected) {
+        alert('Please select an option first!');
+        return false;
+    }
+    
+    return true;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Quiz {{ quiz_number }} Start</h2>
+<p>Get ready to test your knowledge!</p>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<form method="post" action="/quiz/{{ quiz_number }}/start">
+    <button type="submit" style="
+        background-color: orange;
+        color: black;
+        font-size: 18px;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+    ">Start Quiz</button>
+</form>
+{% endblock %}

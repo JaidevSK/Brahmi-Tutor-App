@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Progress Dashboard</h2>
+{% if results %}
+<table style="margin: 0 auto;">
+    <tr><th>Quiz Type</th><th>Last Score</th><th>Last Attempt</th></tr>
+{% for quiz_type, timestamp, score in results %}
+<tr><td>{{ quiz_type }}</td><td>{{ score }}</td><td>{{ timestamp }}</td></tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No attempts yet.</p>
+{% endif %}
+{% endblock %}
